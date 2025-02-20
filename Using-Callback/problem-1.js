@@ -10,6 +10,22 @@ const path = require("path");
 const dir = path.join(__dirname, "randomFile");
 let create = 15;
 
+createFiles((err) => {
+  if (err) {
+    console.log("Error creating files:", err);
+  } else {
+    console.log("Created files successfully!");
+
+    deleteFiles((err) => {
+      if (err) {
+        console.log("Error deleting files:", err);
+      } else {
+        console.log("Deleted files and directory successfully!");
+      }
+    });
+  }
+});
+
 function createFiles(callbackError) {
   fs.mkdir(dir, (err) => {
     if (err) return callbackError(err);
@@ -64,18 +80,4 @@ function deleteFiles(callbackError) {
 
 // module.exports={createFiles,deleteFiles};
 
-createFiles((err) => {
-  if (err) {
-    console.log("Error creating files:", err);
-  } else {
-    console.log("Created files successfully!");
 
-    deleteFiles((err) => {
-      if (err) {
-        console.log("Error deleting files:", err);
-      } else {
-        console.log("Deleted files and directory successfully!");
-      }
-    });
-  }
-});
