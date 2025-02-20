@@ -39,6 +39,9 @@ createDirectory().then(()=>{
     console.log("Files Created");
    return deleteFiles();
 })
+
+
+
 .catch((err)=>{
     console.log("unable to create files:",err);
 })
@@ -76,7 +79,7 @@ function createFilesInDir(){
 
 function deleteFiles(){
 
-    fs.readdir(dirPath,'utf-8').then((data)=>{
+     fs.readdir(dirPath,'utf-8').then((data)=>{
         let files = data
         .map((file) => file.trim())
         .filter(Boolean);
@@ -88,6 +91,10 @@ function deleteFiles(){
                 count++;
                 if(count===createFiles){
                     console.log("Successfuly deleted all files")
+                    fs.rmdir(dirPath).then(()=>{
+                        console.log("Directory deleted");
+                       
+                    });
                 }
             })
             .catch(err=>console.log("errror in deleting a file"));
