@@ -61,13 +61,13 @@ function deleteFiles() {
   });
 }
 
-function deleteDirectory(){
-    return new Promise((res,rej)=>{
-        fs.rmdir(dirPath,(err)=>{
-            if(err) rej(err);
-            else res("Successfully deleted Directory");
-        })
-    })
+function deleteDirectory() {
+  return new Promise((res, rej) => {
+    fs.rmdir(dirPath, (err) => {
+      if (err) rej(err);
+      else res("Successfully deleted Directory");
+    });
+  });
 }
 
 function arrayOfPromiseCreatingFiles() {
