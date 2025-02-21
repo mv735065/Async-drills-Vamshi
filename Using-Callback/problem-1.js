@@ -10,7 +10,7 @@ const path = require("path");
 const dir = path.join(__dirname, "randomFile");
 let create = 15;
 
-createFiles((err) => {
+createDirectoryAndFiles((err) => {
   if (err) {
     console.log("Error creating files:", err);
   } else {
@@ -26,7 +26,7 @@ createFiles((err) => {
   }
 });
 
-function createFiles(callbackError) {
+function createDirectoryAndFiles(callbackError) {
   fs.mkdir(dir, (err) => {
     if (err) return callbackError(err);
 

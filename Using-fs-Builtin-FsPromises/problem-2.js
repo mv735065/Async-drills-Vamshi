@@ -42,7 +42,7 @@ readFile()
   })
   .then((sortedData)=>{
     console.log("Succesfully sorted the data and file is created ");
-    return  addThefileNameToListFile("SortedDataFile.txt\n").then(() => sortedData);
+    return  addThefileNameToListFile("SortedDataFile.txt\n");
   })
   .then(()=>{
     console.log("Sucessfull sorted file added to list ");

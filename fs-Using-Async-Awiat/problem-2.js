@@ -16,42 +16,39 @@ let dirPath = path.join(__dirname, "Data-texts");
 
 let fileNamePath = path.join(dirPath, "filenames.txt");
 
-readTheFile()
-  .then((data) => {
-    console.log("Sucessfully read the lipsum file");
-    return convertToUppercase(data);
-  })
-  .then((upperCaseDatadata) => {
-    console.log("Successfully creatd the uppercase file");
+main();
 
-    return addFileToFileName("upperCaseData.txt\n").then(
-      () => upperCaseDatadata
-    );
-  })
-  .then((upperCaseDatadata) => {
-    return convertDataToLowerAndSplit(upperCaseDatadata);
-  })
-  .then((lowerCaseData) => {
-    console.log("Successfully creatd the lowercase file");
-    return addFileToFileName("lowerCaseData.txt\n").then(() => lowerCaseData);
-  })
-  .then((lowerCaseData) => {
-    return sortThedata(lowerCaseData);
-  })
-  .then((sortedData) => {
-    console.log("Successfully creatd sortedData the file");
-    return addFileToFileName("sortedData.txt\n").then(() => sortedData);
-  })
-  .then(() => {
-    return deleteTheFileInFileNameFile();
-  })
-  .then(() => {
+async function main() {
+  try {
+    const data = await readTheFile();
+    console.log("Successfully read the lipsum file");
+
+    const upperCaseData = await convertToUppercase(data);
+    console.log("Successfully created the uppercase file");
+
+    await addFileToFileName("upperCaseData.txt\n");
+    console.log("Successfully added to the upperCaseDatafile name");
+
+    const lowerCaseData = await convertDataToLowerAndSplit(upperCaseData);
+    console.log("Successfully created the lowercase file");
+
+    await addFileToFileName("lowerCaseData.txt\n");
+    console.log("Successfully added lowerCaseData to the file name");
+
+    const sortedData = await sortThedata(lowerCaseData);
+    console.log("Successfully created sortedData the file");
+
+    await addFileToFileName("sortedData.txt\n");
+    console.log("Successfully added to the file name");
+
+    await deleteTheFileInFileNameFile();
     console.log("Successfully deleted all files");
-    clearOutTheNamesInFilenametxt();
-  })
-  .catch((err) => {
+
+    await clearOutTheNamesInFilenametxt();
+  } catch (err) {
     console.log(err);
-  });
+  }
+}
 
 function readTheFile() {
   let filePath = path.join(dirPath, "lipsum.txt");
@@ -106,8 +103,9 @@ function sortThedata(data) {
     });
   });
 }
-function readDirectory() {
-  return new Promise((res, rej) => {
+
+async function deleteTheFileInFileNameFile() {
+  let files =await new Promise((res, rej) => {
     fs.readFile(fileNamePath, "utf-8", (err, data) => {
       if (err) rej(err);
       else {
@@ -117,13 +115,8 @@ function readDirectory() {
       }
     });
   });
-}
 
-function deleteTheFileInFileNameFile() {
-  let readFile = readDirectory();
-
-  return readFile.then((files) => {
-    return Promise.all(
+    return  Promise.all(
       files.map((file) => {
         let filepath = path.join(dirPath, file);
         return new Promise((res, rej) => {
@@ -134,7 +127,6 @@ function deleteTheFileInFileNameFile() {
         });
       })
     );
-  });
 }
 
 function clearOutTheNamesInFilenametxt() {

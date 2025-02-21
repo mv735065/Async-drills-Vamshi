@@ -57,7 +57,7 @@ function createRandomFiles() {
 
 function deleteFiles() {
   return readDirectory().then((files) => {
-    return Promise.all(arrayOfPromiseDeletingPromises(files));
+    return Promise.all(arrayOfPromiseDeletingFiles(files));
   });
 }
 
@@ -89,11 +89,9 @@ function arrayOfPromiseCreatingFiles() {
   }
   return res;
 }
-function arrayOfPromiseDeletingPromises(files) {
-  let res = [];
-  files.forEach((file) => {
-    res.push(
-      new Promise((res, rej) => {
+function arrayOfPromiseDeletingFiles(files) {
+  return files.map((file) => {
+     return  new Promise((res, rej) => {
         let filePath = path.join(dirPath, file);
         fs.unlink(filePath, (err) => {
           if (err) rej(err);
@@ -102,10 +100,8 @@ function arrayOfPromiseDeletingPromises(files) {
           }
         });
       })
-    );
   });
 
-  return res;
 }
 
 function readDirectory() {
