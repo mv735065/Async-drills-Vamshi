@@ -16,34 +16,53 @@ dirPath = path.join(dirPath, "Data-texts");
 
 let storeFilesNames = path.join(dirPath, "filenames.txt");
 
-readTheFile((err, data) => {
+readTheFile("lipsum.txt", (err, data) => {
   if (err) {
     console.error("Error in reading file lipsum:", err);
   } else {
-    console.log("Successfully read the file");
+    console.log("Successfully read the lipsum file");
 
-    convertUpperCase(data, (err, upperCaseData) => {
+    convertUpperCase(data, (err) => {
       if (err) {
         console.error("error converting text to Uppsercase:", err);
       } else {
         console.log("Converted the text to Upppsercase");
 
-        covertDataToLowerCaseAndSplit(upperCaseData, (err, lowerData) => {
+        readTheFile("uppserCaseDataFile.txt", (err, upperCaseData) => {
           if (err) {
-            console.error("error converting text to Lowercase:", err);
+            console.error("Error in reading file upperFile:", err);
           } else {
-            console.log("Converted the text to Lowercase and splitted");
+            console.log("Successfully read the Upperfile");
 
-            sortTheData(lowerData, (err, sortedData) => {
+            covertDataToLowerCaseAndSplit(upperCaseData, (err) => {
               if (err) {
-                console.error("error in spllited data:", err);
+                console.error("error converting text to Lowercase:", err);
               } else {
-                console.log("Succesfully data is sorted");
+                console.log("Converted the text to Lowercase and splitted");
 
-                deleteFilesInList((err) => {
-                  if (err) console.error("error in files not deleted :", err);
-                  else {
-                    console.log("Files Successfully deleted");
+                readTheFile("lowerCaseDataFile.txt", (err, lowerCaseData) => {
+                  if (err) {
+                    console.error("Error in reading file lowerFile:", err);
+                  } else {
+                    console.log("Successfully read the lowerCaseFile");
+
+                    sortTheData(lowerCaseData, (err) => {
+                      if (err) {
+                        console.error("error in spllited data:", err);
+                      } else {
+                        console.log(
+                          "Succesfully data is sorted and created sorted file"
+                        );
+
+                        deleteFilesInList((err) => {
+                          if (err)
+                            console.error("error in files not deleted :", err);
+                          else {
+                            console.log("Files Successfully deleted");
+                          }
+                        });
+                      }
+                    });
                   }
                 });
               }
@@ -55,13 +74,13 @@ readTheFile((err, data) => {
   }
 });
 
-function readTheFile(callback) {
-  let filePath = path.join(dirPath, "lipsum.txt");
+function readTheFile(name, callback) {
+  let filePath = path.join(dirPath, name);
   fs.readFile(filePath, "utf-8", callback);
 }
 
 function convertUpperCase(data, callback) {
-  let newFile = path.join(dirPath, "/uppserCaseDataFile.txt");
+  let newFile = path.join(dirPath, "uppserCaseDataFile.txt");
   let res = data.toUpperCase();
   fs.writeFile(newFile, res, "utf-8", (err) => {
     if (err) {
@@ -69,7 +88,7 @@ function convertUpperCase(data, callback) {
     } else {
       fs.appendFile(storeFilesNames, "uppserCaseDataFile.txt\n", (err) => {
         if (err) console.log("Unable to add file to filenames: ", err);
-        else callback(null, res);
+        else callback(null);
       });
     }
   });
@@ -86,7 +105,7 @@ function covertDataToLowerCaseAndSplit(upperData, callback) {
     } else {
       fs.appendFile(storeFilesNames, "lowerCaseDataFile.txt\n", (err) => {
         if (err) console.log("Unable to add file to filenames: ", err);
-        else callback(null, splited);
+        else callback(null);
       });
     }
   });
@@ -103,7 +122,7 @@ function sortTheData(data, callback) {
     } else {
       fs.appendFile(storeFilesNames, "sortedDataFile.txt\n", (err) => {
         if (err) console.log("Unable to add file to filenames: ", err);
-        else callback(null, sorted);
+        else callback(null);
       });
     }
   });
@@ -126,12 +145,10 @@ function deleteFilesInList(callback) {
     let deletedCount = 0;
 
     files.forEach((file, index) => {
-      let name=file;
+      let name = file;
       fs.rm(path.join(dirPath, `${file}`), { force: true }, (err) => {
         if (err) return callback(err);
         deletedCount++;
-        console.log(name);
-        
 
         if (deletedCount === files.length) {
           fs.writeFile(storeFilesNames, "", (err) => {
