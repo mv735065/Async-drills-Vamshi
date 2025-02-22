@@ -17,49 +17,58 @@ let dirPath = path.join(__dirname, "Data-texts");
 
 let fileNameList = path.join(dirPath, "filenames.txt");
 
-readFile()
+readFile("lipsum.txt")
   .then((data) => {
     console.log("Sucessfull read data");
     return convertDataToUppercase(data);
   })
-  .then((upperData)=>{
-    console.log("Sucessfull converted to Uppercase data and created file to it");
-    return  addThefileNameToListFile("UpperCaseFileData.txt\n").then(() =>{
-        return upperData;});
-  })
-  .then((upperdata)=>{
-    
-    console.log("Sucessfull Uppercase file added to list ");
-     return convertUpperToLowerCaseAndSplit(upperdata);
-  })
-  .then((lowerdata)=>{
-    console.log("Succesfully created lowercase file data and split into sentences");
-    return  addThefileNameToListFile("LowerCaseData.txt\n").then(() => lowerdata);
-  })
-  .then((lowerData)=>{
-    console.log("Sucessfull Lowercase file added to list ");
-    return sortTheData(lowerData);
-  })
-  .then((sortedData)=>{
-    console.log("Succesfully sorted the data and file is created ");
-    return  addThefileNameToListFile("SortedDataFile.txt\n");
+  .then(() => {
+    console.log(
+      "Sucessfull converted to Uppercase data and created file to it"
+    );
+    return addThefileNameToListFile("UpperCaseFileData.txt\n")
   })
   .then(()=>{
+    console.log("Sucessfull Uppercase file added to list ");
+      return readFile('UpperCaseFileData.txt')
+  })
+  .then((upperdata) => {
+    console.log("Successfully read the Upperfile");
+
+    return convertUpperToLowerCaseAndSplit(upperdata);
+  })
+  .then(() => {
+    console.log(
+      "Succesfully created lowercase file data and split into sentences"
+    );
+    return addThefileNameToListFile("LowerCaseData.txt\n")
+  })
+  .then(()=>{
+    console.log("Sucessfull Lowercase file added to list ");
+    return readFile('LowerCaseData.txt')
+})
+
+  .then((lowerData) => {
+    console.log("Successfully read the lowerCaseFile");
+    return sortTheData(lowerData);
+  })
+  .then(() => {
+    console.log("Succesfully sorted the data and file is created ");
+    return addThefileNameToListFile("SortedDataFile.txt\n");
+  })
+  .then(() => {
     console.log("Sucessfull sorted file added to list ");
     return deleteFilesInFilelist();
   })
-  .then(()=>{
-  console.log("Successfully deleted all files & cleared the list");
-  
+  .then(() => {
+    console.log("Successfully deleted all files & cleared the list");
   })
+  .catch((err) => {
+    console.log("Caught error: ", err);
+  });
 
- 
-  .catch((err)=>{
-      console.log("Caught error: ",err);
-  })
-
-function readFile() {
-  let filePath = path.join(dirPath, "lipsum.txt");
+function readFile(name) {
+  let filePath = path.join(dirPath, name);
   return fs.readFile(filePath, "utf-8");
 }
 
@@ -67,48 +76,51 @@ function convertDataToUppercase(data) {
   let transformData = data.toUpperCase();
   let fileName = "UpperCaseFileData.txt";
   let newFile = path.join(dirPath, fileName);
-  return fs.writeFile(newFile, transformData, "utf-8").then(()=>transformData);
+  return fs
+    .writeFile(newFile, transformData, "utf-8")
+    
 }
 
 function addThefileNameToListFile(name) {
   return fs.appendFile(fileNameList, name, "utf-8");
 }
 
-function convertUpperToLowerCaseAndSplit(data){
-    let lowerData=data.toLowerCase();
-    let splitData=lowerData.split(".").join("\n");
-    let newFile=path.join(dirPath,'LowerCaseData.txt');
-    return fs.writeFile(newFile,splitData,"utf-8").then(()=>lowerData);
+function convertUpperToLowerCaseAndSplit(data) {
+  let lowerData = data.toLowerCase();
+  let splitData = lowerData.split(".").join("\n");
+  let newFile = path.join(dirPath, "LowerCaseData.txt");
+  return fs.writeFile(newFile, splitData, "utf-8")
 }
 
-function sortTheData(data){
-    let sorted=data.split('\n').sort().join('\n');
-    let newFile=path.join(dirPath,'SortedDataFile.txt');
-    return fs.writeFile(newFile,sorted,"utf-8").then(()=>sorted);
+function sortTheData(data) {
+  let sorted = data.split("\n").sort().join("\n");
+  let newFile = path.join(dirPath, "SortedDataFile.txt");
+  return fs.writeFile(newFile, sorted, "utf-8")
 }
 
-function deleteFilesInFilelist(){
-    fs.readFile(fileNameList,'utf-8').then((data)=>{
-        let files=data.split('\n');
-        files.pop();
-        let length=files.length;
-        let count=0;
-        files.forEach((file)=>{
-            let filePath=path.join(dirPath,file);
-            fs.unlink(filePath).then(()=>{
-                console.log("File deleted",file);
-                count++;
-                if(count===length){
-                   return  fs.writeFile(fileNameList,'','utf-8');
-                }
-            })
-            .catch((err)=>{
-                console.log("Error in deleting file",err);
-            })
-        });
-       
+function deleteFilesInFilelist() {
+  fs.readFile(fileNameList, "utf-8")
+    .then((data) => {
+      let files = data.split("\n");
+      files.pop();
+      let length = files.length;
+      let count = 0;
+      files.forEach((file) => {
+        let filePath = path.join(dirPath, file);
+        fs.unlink(filePath)
+          .then(() => {
+            console.log("File deleted", file);
+            count++;
+            if (count === length) {
+              return fs.writeFile(fileNameList, "", "utf-8");
+            }
+          })
+          .catch((err) => {
+            console.log("Error in deleting file", err);
+          });
+      });
     })
-    .catch((err)=>{
-        console.log("Error in reading file names",err);
-    })
+    .catch((err) => {
+      console.log("Error in reading file names", err);
+    });
 }
